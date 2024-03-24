@@ -56,6 +56,7 @@ canvas{
     const bricksOffsetTop = 80;
     const bricksOffsetLeft = 16;
     const bricks = [];
+    let Score = 0;
 
     const BRICK_STATUS = {
         ACTIVE: 1,
@@ -159,14 +160,21 @@ canvas{
                 const isBallTouchingBricksY = 
                     y > currentBrick.y &&
                     y < currentBrick.y + bricksHeight
-                if(isBallTouchingBricksX && isBallTouchingBricksY)
-                {
+                if(isBallTouchingBricksX && isBallTouchingBricksY){
                     dy = -dy
                     currentBrick.status = BRICK_STATUS.DESTROYED
+                    //Score++
                 }
+                if (currentBrick.status == 0){
+                    Score++;
+                    console.log(Score);
+                }
+                
+
             }
         }
     }
+    
     
     function ballMovement(){
         // Rebotar las pelotas en los laterales
@@ -180,8 +188,10 @@ canvas{
         const isBallTouchingPaddleX = 
             x > paddleX &&
             x < paddleX + paddleWidth
+
         const isBallTouchingPaddleY = 
             y + dy > paddleY
+
         if(isBallTouchingPaddleX && isBallTouchingPaddleY)
         {
             dy = -dy
@@ -210,6 +220,7 @@ canvas{
     function cleanCanvas(){
         ctx.clearRect(0,0, canvas.width, canvas.height)
     }
+    
 
     function initEvent(){
         document.addEventListener("keydown",keyDownHandler)
@@ -238,19 +249,65 @@ canvas{
         }
     }
 
+    function drawScore()
+    {
+        for(let c = 0; c < bricksColumnCount; c++){
+            for (let r=0; r < bricksRowCount; r++){
+                const currentBrick = bricks[c][r]
+                if(currentBrick.status == BRICK_STATUS.DESTROYED)
+                    continue;
+                
+                    
+            }
+        }
+    }
+
+    function drawUI() {
+    ctx.fillText(`FPS: ${framesPerSec}`, 5, 10)
+    ctx.fillText(`Score: ${Score} `, canvas.width-80, 10) // Text, posicion x, posicion y
+    }
+
+    const fps = 60
+  
+    let msPrev = window.performance.now()
+    let msFPSPrev = window.performance.now() + 1000;
+    const msPerFrame = 1000 / fps
+    let frames = 0
+    let framesPerSec = fps;
+
     function draw()  {
+        window.requestAnimationFrame(draw)
+
+        const msNow = window.performance.now()
+        const msPassed = msNow - msPrev
+
+        if (msPassed < msPerFrame) return
+
+        const excessTime = msPassed % msPerFrame
+        msPrev = msNow - excessTime
+
+        frames++
+
+        if (msFPSPrev < msNow)
+        {
+        msFPSPrev = window.performance.now() + 1000
+        framesPerSec = frames;
+        frames = 0;
+        }
+
         cleanCanvas()
 
         drawBall()
         drawPaddle()
         drawBricks()
-        //drawScore()
+        drawUI()
+        drawScore()
 
         //Colisiones y movimientos
-        collisizonDetection()
+        collisionDetection()
         ballMovement()
         paddleMovement()
-        window.requestAnimationFrame(draw)
+        //window.requestAnimationFrame(draw)
     }
 
     draw()
