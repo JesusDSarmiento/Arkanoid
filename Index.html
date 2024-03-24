@@ -13,7 +13,7 @@ body{
 canvas{
     border: 4px solid #fff;
     border-bottom: transparent;
-    background: url("bkg.png") repeat ;
+    background: url("/Imagenes/bkg.png") repeat ;
     margin: 0 auto;
     display: block;
     }
@@ -23,8 +23,8 @@ canvas{
 
 <canvas></canvas>
 
-<img hidden id="Sprite" src="sprite.png" alt="Sprite Arkanoid"/>
-<img hidden id="Bricks" src="bricks.png" alt="Sprite Bricks Arkanoid"/>
+<img hidden id="Sprite" src="/Imagenes/sprite.png" alt="Sprite Arkanoid"/>
+<img hidden id="Bricks" src="/Imagenes/bricks.png" alt="Sprite Bricks Arkanoid"/>
 
 <script>
     const canvas = document.querySelector('canvas')
@@ -147,10 +147,25 @@ canvas{
     }
 
     function collisionDetection(){
-        //if()
-        //{
+        for(let c = 0; c < bricksColumnCount; c++){
+            for (let r=0; r < bricksRowCount; r++){
+                const currentBrick = bricks[c][r]
+                if(currentBrick.status == BRICK_STATUS.DESTROYED) continue;
+                
+                const isBallTouchingBricksX = 
+                    x > currentBrick.x &&
+                    x < currentBrick.x + bricksWidth
 
-        //}
+                const isBallTouchingBricksY = 
+                    y > currentBrick.y &&
+                    y < currentBrick.y + bricksHeight
+                if(isBallTouchingBricksX && isBallTouchingBricksY)
+                {
+                    dy = -dy
+                    currentBrick.status = BRICK_STATUS.DESTROYED
+                }
+            }
+        }
     }
     
     function ballMovement(){
@@ -232,7 +247,7 @@ canvas{
         //drawScore()
 
         //Colisiones y movimientos
-        collisionDetection()
+        collisizonDetection()
         ballMovement()
         paddleMovement()
         window.requestAnimationFrame(draw)
